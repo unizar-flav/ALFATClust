@@ -27,6 +27,8 @@ def set_and_parse_args(config):
                         help='Output cluster file path')
     parser.add_argument('-e', '--evaluate', action='store', dest='cluster_eval_csv_file_path',
                         help='Sequence cluster evaluation output CSV file path')
+    parser.add_argument('-ea', '--evaluate-all', action='store_true', dest='cluster_eval_all',
+                        help='Include all sequences in evaluation (single seq clusters)')
     help_msg = 'Lower bound for estimated similarity range [{}]'
     parser.add_argument('-l', '--low', type=float, help=help_msg.format(config.res_param_end),
                         default=config.res_param_end)
@@ -287,6 +289,12 @@ if __name__ == '__main__':
                 f_out.writelines(seq_cluster)
 
         if cluster_eval_output_df is not None:
+            # complete cluster evaluation with all sequences (to include single-sequence clusters)
+            if args.cluster_eval_all:
+                for ndx, seq_cluster in enumerate(output_seq_clusters):
+                    if ndx+1 not in cluster_eval_output_df.index:
+                        cluster_eval_output_df.loc[ndx+1] = [1, 1., 1., seq_cluster[0].strip(), seq_cluster[0].strip()]
+                cluster_eval_output_df.sort_index(inplace=True)
             cluster_eval_output_df.to_csv(args.cluster_eval_csv_file_path)
 
         print()
