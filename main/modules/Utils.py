@@ -60,7 +60,7 @@ def read_seq_file(seq_file_path, user_params=None):
         for seq_record in SeqIO.parse(f, 'fasta'):
             last_seq_name = seq_record.description
 
-            seq_type = check_seq_type(str(seq_record.seq))
+            seq_type = AA #Only for protein sequences
             if seq_type is None:
                 seq_error_log.append(unknown_seq_type_msg.format(last_seq_name))
 
